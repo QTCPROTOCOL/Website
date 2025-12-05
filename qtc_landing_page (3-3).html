@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>QTC Protocol – Quantum-Safe Bitcoin Evolution</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif}
+  html,body{width:100%;background:#00000000;color:#fff;overflow-x:hidden}
+
+  /* background canvas that hosts Three.js scene */
+  #bgCanvas{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
+
+  section{position:relative;z-index:2;min-height:120vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 2rem}
+  h1,h2{font-weight:800;letter-spacing:.05em;background:linear-gradient(90deg,#00faff,#55ffff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  p{max-width:700px;margin:1rem auto 2rem;color:#cceeff;line-height:1.6}
+  .btn{padding:.8rem 1.6rem;border:2px solid #00faff;border-radius:4px;background:transparent;color:#00faff;font-weight:600;text-decoration:none;transition:.3s}
+  .btn:hover{background:#00faff;color:#000}
+
+  nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;z-index:10;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+  nav h1{font-size:1.4rem;font-weight:700;background:linear-gradient(90deg,#00faff,#55ffff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  nav a{color:#fff;margin-left:1.5rem;text-decoration:none;font-weight:500}
+  nav a:hover{color:#00faff}
+
+  /* subtle content card to demonstrate overlay legibility */
+  .card{background:rgba(0,0,0,0.45);padding:1.2rem;border-radius:12px;backdrop-filter:blur(6px);box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+
+<nav>
+  <h1>QTC</h1>
+  <div>
+    <a href="#intro">Intro</a>
+    <a href="#tech">Tech</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#deep">Deep Dive</a>
+    <a href="#lorem">More</a>
+  </div>
+</nav>
+
+<section id="intro">
+  <div class="card">
+    <h1>Quantum-Safe Bitcoin Evolution</h1>
+    <p>QTC is a post-quantum hard-fork of Bitcoin that replaces ECDSA with Kyber1024 and Dilithium3, securing the next 100 years of blockchain.</p>
+    <a class="btn" href="#tech">Discover More</a>
+  </div>
+</section>
+
+<section id="tech">
+  <h2>Post-Quantum Cryptography</h2>
+  <p>Kyber1024 delivers next‑gen KEM security, while Dilithium3 provides lattice‑based signature guarantees designed to withstand quantum adversaries.</p>
+</section>
+
+<section id="roadmap">
+  <h2>Roadmap</h2>
+  <p>Phase 1: Whitepaper<br>Phase 2: Testnet<br>Phase 3: Audit<br>Phase 4: Mainnet</p>
+</section>
+
+<section id="deep">
+  <h2>Quantum Mechanics of QTC</h2>
+  <p>The cube distortion visualizes the collapse of cryptographic states under quantum load, representing QTC’s resilience.</p>
+</section>
+
+<section id="lorem">
+  <h2>More Content</h2>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur varius arcu ut sapien interdum, sit amet pulvinar massa cursus. Sed a eros sed sapien consequat varius. Morbi nec libero non tortor mollis aliquet. Integer facilisis luctus eros, id vulputate odio gravida sit amet. Aliquam erat volutpat.</p>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vel dui vel orci tempus gravida. Sed euismod, ligula ut vehicula fermentum, ipsum felis luctus elit, sed luctus arcu sem a erat.</p>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script>
+/* ------------------------------------------------------------------
+   Full cinematic enhancements bundle (H):
+   - Original cube code unchanged (renders into #bgCanvas)
+   - Parallax starfield particle system
+   - Mouse-driven magnetic distortion
+   - Signature pulse glow
+   - Section-based timelines (IntersectionObserver)
+   - Scroll-driven anime.js timeline (smooth)
+   - Quantum collapse "mic-drop" at bottom
+   - Color palette transitions tied to Kyber/Dilithium
+   Implementation focuses on compatibility and non-invasive changes.
+   ------------------------------------------------------------------ */
+
+// ----------------- Original cube setup (kept intact) -----------------
+const canvas = document.getElementById('bgCanvas');
+const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.z = 9;
+
+const palette = [0x0022ff,0x0044ff,0x0066ff,0x0088ff,0x0099ff,0x00bbff,0x00ddff,0x00faff,0x33ffff,0x55ffff,0x77ffff];
+
+function makeNeonCube(size, color){
+  const geom = new THREE.BoxGeometry(size,size,size);
+  const edges = new THREE.EdgesGeometry(geom);
+  const mat = new THREE.LineBasicMaterial({ color, transparent:true, opacity:0.95, blending:THREE.AdditiveBlending, depthWrite:false });
+  const lineMesh = new THREE.LineSegments(edges, mat);
+  const glowGeom = new THREE.BoxGeometry(size*1.1,size*1.1,size*1.1);
+  const glowMat = new THREE.MeshBasicMaterial({ color, transparent:true, opacity:0.1, blending:THREE.AdditiveBlending, depthWrite:false });
+  const glowMesh = new THREE.Mesh(glowGeom, glowMat);
+  const group = new THREE.Group(); group.add(lineMesh); group.add(glowMesh); return group;
+}
+
+const outerGroup = new THREE.Group(); scene.add(outerGroup);
+const innerGroup = new THREE.Group(); scene.add(innerGroup);
+const OUTER_COUNT = 20, INNER_COUNT = 15, outerBase = 3.2, innerBase = 1.3;
+let outerCubes = [], innerCubes = [];
+
+for(let i=0;i<OUTER_COUNT;i++){
+  const size = outerBase * (1 - i*0.045);
+  const col = palette[i % palette.length];
+  const cube = makeNeonCube(size,col);
+  cube.userData.rx = Math.random()*2; cube.userData.ry = Math.random()*2; cube.userData.rz = Math.random()*2;
+  outerGroup.add(cube); outerCubes.push(cube);
+}
+for(let i=0;i<INNER_COUNT;i++){
+  const size = innerBase * (1 - i*0.06);
+  const col = palette[(i+4) % palette.length];
+  const cube = makeNeonCube(size,col);
+  cube.userData.rx = Math.random()*3; cube.userData.ry = Math.random()*3; cube.userData.rz = Math.random()*3;
+  innerGroup.add(cube); innerCubes.push(cube);
+}
+
+// ----------------- Parallax starfield (particles) -----------------
+const starCount = 600;
+const starsGeo = new THREE.BufferGeometry();
+const starPos = new Float32Array(starCount * 3);
+for(let i=0;i<starCount;i++){
+  starPos[i*3] = (Math.random()-0.5)*200;
+  starPos[i*3+1] = (Math.random()-0.5)*120;
+  starPos[i*3+2] = -Math.random()*300 - 20;
+}
+starsGeo.setAttribute('position', new THREE.BufferAttribute(starPos,3));
+const starMat = new THREE.PointsMaterial({ size: 0.3, transparent:true, opacity:0.7 });
+const stars = new THREE.Points(starsGeo, starMat);
+scene.add(stars);
+
+// ----------------- Signature pulse (glow intensity control) ----------
+let pulse = { value: 0 };
+function pulseTick(time){
+  // simple heartbeat using sin
+  pulse.value = 0.08 + Math.abs(Math.sin(time*0.003))*0.06; // base + pulse
+  // apply to glow meshes of inner cubes
+  innerCubes.forEach(cube => cube.children[1].material.opacity = 0.1 + pulse.value);
+}
+
+// ----------------- Mouse-driven magnetism ---------------------------
+const mouse = { x:0, y:0 };
+window.addEventListener('mousemove', (e)=>{
+  const nx = (e.clientX / window.innerWidth) * 2 - 1;
+  const ny = (e.clientY / window.innerHeight) * 2 - 1;
+  mouse.x = nx; mouse.y = ny;
+});
+
+// ----------------- Color palette transitions ------------------------
+const paletteTargets = {
+  kyber: [0x00bbff,0x00ddff,0x33ffff],
+  dilithium: [0x77ffff,0x55ffff,0x33ffff]
+};
+let currentPalette = 'kyber';
+function applyPalette(name){
+  const list = paletteTargets[name];
+  outerCubes.forEach((c,i)=>{
+    const col = list[i % list.length];
+    // set line material color and glow color
+    c.children[0].material.color.setHex(col);
+    c.children[1].material.color.setHex(col);
+  });
+}
+
+// ----------------- Section-triggered timelines ---------------------
+const sectionTimelines = {};
+function createSectionTimelines(){
+  // Tech: slow expand + color shift
+  sectionTimelines.tech = anime.timeline({ autoplay:false, duration:900, easing:'easeOutExpo' });
+  sectionTimelines.tech.add({
+    targets: outerGroup.rotation,
+    x: 0.6,
+    y: 1.2,
+    duration: 900
+  });
+  sectionTimelines.tech.add({
+    targets: camera.position,
+    z: 8.2,
+    duration: 900
+  }, 0);
+
+  // Roadmap: camera slide and gentle explode
+  sectionTimelines.roadmap = anime.timeline({ autoplay:false, duration:1000, easing:'easeOutExpo' });
+  sectionTimelines.roadmap.add({ targets: outerGroup.position, x: -6, duration:1000 }, 0);
+  sectionTimelines.roadmap.add({ targets: camera.position, z: 10.5, duration:1000 }, 0);
+
+  // Deep: tighten inner core and intensify glow
+  sectionTimelines.deep = anime.timeline({ autoplay:false, duration:1000, easing:'easeOutExpo' });
+  sectionTimelines.deep.add({ targets: innerGroup.rotation, x: -1.2, y: -1.6, duration:1000 }, 0);
+  sectionTimelines.deep.add({ targets: innerCubes.map(c=>c.children[1].material), opacity: 0.8, duration:1000 }, 0);
+}
+createSectionTimelines();
+
+// IntersectionObserver to trigger timelines
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(entry => {
+    if(!entry.isIntersecting) return;
+    const id = entry.target.id;
+    if(id === 'tech') { sectionTimelines.tech.play(); applyPalette('kyber'); }
+    if(id === 'roadmap') { sectionTimelines.roadmap.play(); applyPalette('dilithium'); }
+    if(id === 'deep') { sectionTimelines.deep.play(); }
+  });
+}, { threshold: 0.45 });
+['tech','roadmap','deep'].forEach(id=> io.observe(document.getElementById(id)));
+
+// ----------------- Scroll-driven anime timeline (global cinematic) --
+const scrollTL = anime.timeline({ duration: 1200, easing: 'easeOutExpo', autoplay:false });
+
+// outer explode and fade wires
+outerCubes.forEach((cube,i)=>{
+  scrollTL.add({ targets: cube.position, x: (i%2?1:-1)*(12+i*3), y: (i%3?1:-1)*(8+i*2), z: (i%4?1:-1)*(6+i*2), duration:900 }, 0);
+  scrollTL.add({ targets: cube.children[0].material, opacity: 0.35, duration:700 }, 0);
+});
+// inner implode and glow
+innerCubes.forEach((cube,i)=>{
+  scrollTL.add({ targets: cube.position, x: (i%2?-1:1)*(8+i*2), y:(i%3?-1:1)*(6+i*2), z:(i%4?-1:1)*(4+i*2), duration:900 }, 0);
+  scrollTL.add({ targets: cube.children[1].material, opacity: 0.7, duration:700 }, 0);
+});
+
+let ticking = false;
+function onScroll(){
+  if(!ticking){
+    window.requestAnimationFrame(()=>{
+      const st = window.pageYOffset;
+      const progress = Math.min(st / (document.body.scrollHeight - window.innerHeight), 1);
+      scrollTL.seek(scrollTL.duration * progress);
+
+      // quantum collapse at bottom (mic-drop)
+      if(progress === 1){
+        // micro timeline that flattens and reveals logo
+        anime.timeline({ easing:'easeOutExpo' }).add({
+          targets: outerCubes.map(c=>c.scale), x:0.18, y:0.18, z:0.18, duration:700
+        }).add({
+          targets: innerCubes.map(c=>c.scale), x:0.28, y:0.28, z:0.28, duration:700
+        }, '-=300');
+      }
+
+      ticking = false;
+    });
+    ticking = true;
+  }
+}
+window.addEventListener('scroll', onScroll, { passive:true });
+
+// ----------------- Mouse influence + subtle auto motion ----------------
+function applyMouseInfluence(dt){
+  // small rotation targets based on mouse and time
+  const t = performance.now()*0.0006;
+  const mx = mouse.x * 0.25;
+  const my = mouse.y * 0.25;
+  outerGroup.rotation.x += (my - outerGroup.rotation.x) * 0.06;
+  outerGroup.rotation.y += (mx - outerGroup.rotation.y) * 0.06;
+
+  innerGroup.rotation.x += (-my*0.6 - innerGroup.rotation.x) * 0.05;
+  innerGroup.rotation.y += (-mx*0.6 - innerGroup.rotation.y) * 0.05;
+
+  // parallax stars shift slightly
+  stars.position.x = mouse.x * 8;
+  stars.position.y = -mouse.y * 6;
+}
+
+// ----------------- Main animation loop (keeps original behavior) -----
+function animate(time){
+  const t = time*0.001;
+  const phase = (Math.sin(t*1.6)+1)/2;
+  const flatten = Math.pow(phase,3);
+
+  outerCubes.forEach((cube,i)=>{
+    const speed = 0.08 + i*0.004;
+    cube.rotation.x = cube.userData.rx * t * speed * (1 - flatten);
+    cube.rotation.y = cube.userData.ry * t * speed * (1 - flatten);
+    cube.rotation.z = cube.userData.rz * t * speed * (1 - flatten);
+    cube.rotation.x *= (1 - flatten);
+    cube.rotation.y *= (1 - flatten);
+  });
+  innerCubes.forEach((cube,i)=>{
+    const speed = 0.16 + i*0.008;
+    cube.rotation.x = cube.userData.rx * t * speed * (1 - flatten);
+    cube.rotation.y = cube.userData.ry * t * speed * (1 - flatten);
+    cube.rotation.z = cube.userData.rz * t * speed * (1 - flatten);
+  });
+
+  // signature pulse
+  pulseTick(time);
+  // mouse influence
+  applyMouseInfluence(time);
+
+  renderer.render(scene,camera);
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+// ----------------- Resize handling ----------------
+window.addEventListener('resize', ()=>{
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+</script>
+</body>
+</html>

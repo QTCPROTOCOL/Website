@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>QTC Protocol – Quantum-Safe Bitcoin Evolution</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif}
+  html,body{width:100%;background:#00000000;color:#fff;overflow-x:hidden}
+
+  #bgCanvas{position:fixed;inset:0;z-index:-1;pointer-events:none}
+
+  section{position:relative;z-index:2;min-height:120vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 2rem}
+  h1,h2{font-weight:800;letter-spacing:.05em;background:linear-gradient(90deg,#00faff,#55ffff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  p{max-width:700px;margin:1rem auto 2rem;color:#cceeff;line-height:1.6}
+  .btn{padding:.8rem 1.6rem;border:2px solid #00faff;border-radius:4px;background:transparent;color:#00faff;font-weight:600;text-decoration:none;transition:.3s}
+  .btn:hover{background:#00faff;color:#000}
+
+  nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;z-index:10;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+  nav h1{font-size:1.4rem;font-weight:700;background:linear-gradient(90deg,#00faff,#55ffff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  nav a{color:#fff;margin-left:1.5rem;text-decoration:none;font-weight:500}
+  nav a:hover{color:#00faff}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+
+<nav>
+  <h1>QTC</h1>
+  <div>
+    <a href="#intro">Intro</a>
+    <a href="#tech">Tech</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#deep">Deep Dive</a>
+    <a href="#lorem">More</a>
+  </div>
+</nav>
+
+<section id="intro">
+  <h1>Quantum-Safe Bitcoin Evolution</h1>
+  <p>QTC is a post-quantum hard-fork of Bitcoin that replaces ECDSA with Kyber1024 and Dilithium3, securing the next 100 years of blockchain.</p>
+  <a class="btn" href="#tech">Discover More</a>
+</section>
+
+<section id="tech">
+  <h2>Post-Quantum Cryptography</h2>
+  <p>Kyber1024 delivers next‑gen KEM security, while Dilithium3 provides lattice‑based signature guarantees designed to withstand quantum adversaries.</p>
+</section>
+
+<section id="roadmap">
+  <h2>Roadmap</h2>
+  <p>Phase 1: Whitepaper<br>Phase 2: Testnet<br>Phase 3: Audit<br>Phase 4: Mainnet</p>
+</section>
+
+<section id="deep">
+  <h2>Quantum Mechanics of QTC</h2>
+  <p>The cube distortion visualizes the collapse of cryptographic states under quantum load, representing QTC’s resilience.</p>
+</section>
+
+<section id="lorem">
+  <h2>More Content</h2>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur varius arcu ut sapien interdum, sit amet pulvinar massa cursus. Sed a eros sed sapien consequat varius. Morbi nec libero non tortor mollis aliquet. Integer facilisis luctus eros, id vulputate odio gravida sit amet. Aliquam erat volutpat.</p>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vel dui vel orci tempus gravida. Sed euismod, ligula ut vehicula fermentum, ipsum felis luctus elit, sed luctus arcu sem a erat.</p>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script>
+// --- ORIGINAL QTC1 CUBE CODE (UNCHANGED) — only modification: rendering to #bgCanvas ---
+
+const canvas = document.getElementById("bgCanvas");
+const renderer = new THREE.WebGLRenderer({ antialias:true, canvas: canvas });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+
+const camera = new THREE.PerspectiveCamera(
+  45,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  2000
+);
+camera.position.z = 9;
+
+const palette = [
+  0x0022ff, 0x0044ff, 0x0066ff, 0x0088ff, 0x0099ff,
+  0x00bbff, 0x00ddff, 0x00faff, 0x33ffff, 0x55ffff,
+  0x77ffff
+];
+
+function makeNeonCube(size, color) {
+  const geom = new THREE.BoxGeometry(size, size, size);
+  const edges = new THREE.EdgesGeometry(geom);
+
+  const mat = new THREE.LineBasicMaterial({
+    color,
+    transparent: true,
+    opacity: 0.95,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    linewidth: 2
+  });
+
+  const lineMesh = new THREE.LineSegments(edges, mat);
+
+  const glowGeom = new THREE.BoxGeometry(size * 1.1, size * 1.1, size * 1.1);
+  const glowMat = new THREE.MeshBasicMaterial({
+    color: color,
+    transparent: true,
+    opacity: 0.1,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  const glowMesh = new THREE.Mesh(glowGeom, glowMat);
+
+  const group = new THREE.Group();
+  group.add(lineMesh);
+  group.add(glowMesh);
+
+  return group;
+}
+
+const outerGroup = new THREE.Group();
+scene.add(outerGroup);
+
+const innerGroup = new THREE.Group();
+scene.add(innerGroup);
+
+const OUTER_COUNT = 20;
+const INNER_COUNT = 15;
+const outerBase = 3.2;
+const innerBase = 1.3;
+
+let outerCubes = [];
+let innerCubes = [];
+
+for (let i = 0; i < OUTER_COUNT; i++) {
+  const size = outerBase * (1 - i * 0.045);
+  const col = palette[i % palette.length];
+  const cube = makeNeonCube(size, col);
+
+  cube.userData.rx = Math.random() * 2;
+  cube.userData.ry = Math.random() * 2;
+  cube.userData.rz = Math.random() * 2;
+
+  outerGroup.add(cube);
+  outerCubes.push(cube);
+}
+
+for (let i = 0; i < INNER_COUNT; i++) {
+  const size = innerBase * (1 - i * 0.06);
+  const col = palette[(i + 4) % palette.length];
+  const cube = makeNeonCube(size, col);
+
+  cube.userData.rx = Math.random() * 3;
+  cube.userData.ry = Math.random() * 3;
+  cube.userData.rz = Math.random() * 3;
+
+  innerGroup.add(cube);
+  innerCubes.push(cube);
+}
+
+function animate(t) {
+  t *= 0.001;
+
+  const phase = (Math.sin(t * 1.6) + 1) / 2;
+  const flatten = Math.pow(phase, 3);
+
+  outerCubes.forEach((cube, i) => {
+    const speed = 0.08 + i * 0.004;
+
+    cube.rotation.x = cube.userData.rx * t * speed * (1 - flatten);
+    cube.rotation.y = cube.userData.ry * t * speed * (1 - flatten);
+    cube.rotation.z = cube.userData.rz * t * speed * (1 - flatten);
+
+    cube.rotation.x *= (1 - flatten);
+    cube.rotation.y *= (1 - flatten);
+  });
+
+  innerCubes.forEach((cube, i) => {
+    const speed = 0.16 + i * 0.008;
+    cube.rotation.x = cube.userData.rx * t * speed * (1 - flatten);
+    cube.rotation.y = cube.userData.ry * t * speed * (1 - flatten);
+    cube.rotation.z = cube.userData.rz * t * speed * (1 - flatten);
+  });
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+animate();
+
+window.addEventListener("resize", () => {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+});
+/* =========  SCROLL-DRIVEN ANIME.JS TRANSFORM  ========= */
+const scrollTL = anime.timeline({
+  duration: 1000,
+  easing: 'easeOutExpo',
+  autoplay: false
+});
+
+/* ---  outer cubes : explode outward & fade --- */
+outerCubes.forEach((cube, i) => {
+  scrollTL.add({
+    targets: cube.position,
+    x:  (i%2?1:-1) * (20+i*4),
+    y:  (i%3?1:-1) * (15+i*3),
+    z:  (i%4?1:-1) * (10+i*2),
+    duration: 800
+  }, 0);
+  scrollTL.add({
+    targets: cube.children[0].material,   // wireframe
+    opacity: 0.2,
+    duration: 600
+  }, 0);
+});
+
+/* ---  inner cubes : implode & intensify glow --- */
+innerCubes.forEach((cube, i) => {
+  scrollTL.add({
+    targets: cube.position,
+    x:  (i%2?-1:1) * (12+i*2),
+    y:  (i%3?-1:1) * (10+i*2),
+    z:  (i%4?-1:1) * ( 8+i*2),
+    duration: 800
+  }, 0);
+  scrollTL.add({
+    targets: cube.children[1].material,   // glow mesh
+    opacity: 0.6,
+    duration: 600
+  }, 0);
+});
+
+/* ---  scroll listener throttled by RAF --- */
+let last = 0, ticking = false;
+function onScroll() {
+  if (!ticking) {
+    window.requestAnimationFrame(() => {
+      const st = window.pageYOffset;
+      const progress = Math.min(st / (document.body.scrollHeight - window.innerHeight), 1);
+      scrollTL.seek(scrollTL.duration * progress);
+      ticking = false;
+    });
+    ticking = true;
+  }
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+/* ======================================================= */
+</script>
+</body>
+</html>

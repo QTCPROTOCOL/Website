@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>QTC Protocol – Quantum Coin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif}
+  html,body{width:100%;background:#00000000;color:#fff;overflow-x:hidden}
+
+  /* background canvas that hosts Three.js scene */
+  #bgCanvas{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
+
+  section{position:relative;z-index:2;min-height:120vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 2rem}
+  h1,h2{font-weight:800;letter-spacing:.05em;background:linear-gradient(90deg,#00faff,#55ffff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  p{max-width:700px;margin:1rem auto 2rem;color:#cceeff;line-height:1.6}
+  .btn{padding:.8rem 1.6rem;border:2px solid #00faff;border-radius:4px;background:transparent;color:#00faff;font-weight:600;text-decoration:none;transition:.3s}
+  .btn:hover{background:#00faff;color:#000}
+
+  nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;z-index:10;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+  nav h1{font-size:1.4rem;font-weight:700;background:linear-gradient(90deg,#00faff,#55ffff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  nav a{color:#fff;margin-left:1.5rem;text-decoration:none;font-weight:500}
+  nav a:hover{color:#00faff}
+
+  /* subtle content card to demonstrate overlay legibility */
+  .card{background:rgba(0,0,0,0.45);padding:1.2rem;border-radius:12px;backdrop-filter:blur(6px);box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+   /* ---------- footer scoped styles ---------- */
+  .qtc-footer{
+    position:relative;
+    z-index:3;                /* sits above canvas but below nav */
+    width:100%;
+    padding:4rem 2rem 2rem;
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(8px);
+    border-top:1px solid rgba(0,250,255,.18);
+    color:#cceeff;
+    font-size:.9rem;
+  }
+  .qtc-footer a{color:#00faff;text-decoration:none;}
+  .qtc-footer a:hover{text-decoration:underline;}
+  .qtc-footer-inner{
+    max-width:1200px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:2rem;
+  }
+  .qtc-footer h4{
+    font-weight:700;
+    margin-bottom:.8rem;
+    letter-spacing:.04em;
+    background:linear-gradient(90deg,#00faff,#55ffff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .qtc-footer ul{list-style:none;padding:0;margin:0;}
+  .qtc-footer li{margin:.4rem 0;}
+  .qtc-footer-bottom{
+    margin-top:2.5rem;
+    padding-top:1.2rem;
+    border-top:1px solid rgba(0,250,255,.12);
+    text-align:center;
+    font-size:.8rem;
+    opacity:.75;
+  }
+
+  /* subtle live-block indicator */
+  .live-block{
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    font-size:.75rem;
+    margin-top:.5rem;
+  }
+  .live-block::before{
+    content:'';
+    width:7px;height:7px;
+    border-radius:50%;
+    background:#00faff;
+    box-shadow:0 0 8px #00faff;
+    animation: pulseDot 1.8s infinite;
+  }
+  @keyframes pulseDot{
+    0%,100%{transform:scale(1);opacity:1;}
+    50%{transform:scale(1.5);opacity:.4;}
+  }
+  .photo-card{
+    display:flex;
+    gap:1.8rem;
+    align-items:center;
+    max-width:760px;          /* “medium” size */
+    margin:2rem auto 0;
+    padding:0;
+    overflow:hidden;
+    background:rgba(0,0,0,0.50);
+    border-radius:14px;
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(0,250,255,.15);
+    box-shadow:0 12px 40px rgba(0,0,0,.55);
+  }
+  .photo-card img{
+    width:46%;
+    object-fit:cover;
+    min-height:220px;
+    border-right:1px solid rgba(0,250,255,.12);
+  }
+  .photo-card .card-body{
+    padding:1.4rem 1.8rem 1.4rem 0;
+  }
+  .photo-card h3{
+    font-weight:700;
+    font-size:1.25rem;
+    margin-bottom:.6rem;
+    background:linear-gradient(90deg,#00faff,#55ffff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .photo-card p{
+    margin-bottom:1.2rem;
+    line-height:1.55;
+  }
+
+  /* quick responsive tweak */
+  @media (max-width:768px){
+    .photo-card{flex-direction:column;}
+    .photo-card img{width:100%;height:180px;border-right:none;border-bottom:1px solid rgba(0,250,255,.12);}
+    .photo-card .card-body{padding:1.2rem 1.4rem 1.6rem;}
+  }
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+
+<nav>
+  <h3>QTC<img src="QTC.png" alt="QTC Logo" style="height:32px;"></h3>
+  <div>
+    <a href="#intro">Intro</a>
+    <a href="#tech">Tech</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#deep">Deep Dive</a>
+    <a href="#lorem">More</a>
+  </div>
+</nav>
+
+<section id="intro">
+  <div class="car">
+    <h1>100% Quantum-Safe Blockchain Protocol</h1>
+    <p>QTC is a post-quantum blockchain protocol that uses Kyber1024 for KEM and Dilithium3 for signatures. QTC uses an optimized mining algorithm of Kyber1024 + RandomX and Cuckoo Cycle + Blake3 for fast verification. QTC uses a PQ P2P node to secure the network from end to end making Quantum Coin the first truly quantum-safe blockchain. QTC has covered every quantum attack vector currently possible by quantum computers leaving no vulnerabilities while simulatenously not sacrificing performance or network throughput.</p>
+    <a class="btn" href="#tech">Discover More</a>
+    <a class="btn" href="QTC_Whitepaper.html" target="_blank">Whitepaper</a>
+  </div>
+</section>
+
+<section id="tech">
+  <h2>The Quantum Apocalypse</h2>
+  <p>TERRIFYING QUANTUM MATH:
+
+🔢 Qubits needed to break Crypto: 4,000
+🔢 Current Qubits: 1,500
+🔢 IBM's 2025 roadmap: 1,000,000+ qubits
+🔢 Your chance of survival on crypto: 0%
+🔢 QTC's quantum resistance: ∞</p>
+<p>
+  
+⏰ QUANTUM DOOMSDAY CLOCK ⏰
+
+⏰2026: You read this warning
+⏰2027: Quantum computers go live
+⏰2028: First crypto wallet hacked
+⏰2029: Mass crypto panic begins
+⏰2030: Crypto = $0
+⏰2036: QTC = Digital Gold 2.0
+</p>
+<p>
+  🚨 QUANTUM ALERT 🚨
+
+🚨IBM just confirmed: 1 million qubit quantum computer by 2030
+🚨This is 250x more than needed to BREAK any non-quantum safe crypto
+🚨Quantum computers are a threat to all traditional investment systems that are not quantum safe
+🚨Your crypto wallet = quantum computer's breakfast
+🚨Migration to QTC = your only survival option
+</p>
+</section>
+
+<section id="roadmap">
+  <h2>Roadmap</h2>
+  <p>Phase 1: Whitepaper<br>Phase 2: Testnet<br>Phase 3: Audit<br>Phase 4: Mainnet</p>
+</section>
+
+<section id="deep">
+  <h2>QTC Quantum Store Of Value</h2>
+  <p>🟢 SECURE (2026): Time to research and accumulate<br>🟡 CONCERNING (2027-2028): Window narrowing rapidly<br>🟠 DANGEROUS (2029-2030): Panic selling begins<br>🔴 CATASTROPHIC (2031+): Too late to migrate safely</p>
+</section>
+
+<section id="lorem">
+   <!-- medium card with photo -->
+  <div class="card photo-card">
+    <img src="BTC1.png"
+         alt="Abstract blockchain network">
+    <div class="card-body">
+  <h2>The QTC Advantage</h2>
+  <p>🔐 Quantum-Safe Key & Address Generation<br>• NIST-Certified: Kyber1024 + Dilithium3 algorithms with 100+ year protection<br>• Revolutionary Compression: 99.4% signature reduction (3,293 → 20 bytes)<br>• User Friendly: BIP39 compatible with 12-36 word recovery phrases<br>• Future-Proof: Immune to Shor's algorithm that will break legacy crypto's
+    <br>⚡ qRandomX Quantum-Enhanced Mining<br>• Fair & Decentralized: No quantum computer advantage, CPU-friendly mining<br>• ASIC-Resistant: Consumer hardware mining that stays democratic<br>• Hybrid Security: Four-layer protection (Kyber1024 + RandomX & Cuckoo + Blake3)<br>• Competitive Performance: 97% efficiency vs classical RandomX 
+    <br>🌐 Post-Quantum P2P Network<br>• Sub-100ms Handshakes: Lightning-fast quantum-secure connections<br>• Perfect Forward Secrecy: Each session protected even if quantum computers emerge<br>• MITM Immune: Dilithium3 authentication prevents interception<br>• ChaCha20-Poly1305: Military-grade encryption with quantum-safe key derivation
+    <br>💎 Ultimate Store of Value<br>• Quantum Migration Insurance: Safe haven when legacy chains become vulnerable<br>• Economic Security: $10¹² quantum computer cost vs typical transaction values<br>• First-Mover Advantage: Only production-ready quantum-resistant cryptocurrency<br>• Timeline Advantage: Ready now while all other cryptos face 2030's quantum threats.</p>
+</section>
+<footer class="qtc-footer">
+  <div class="qtc-footer-inner">
+    <div>
+      <h4>Protocol</h4>
+      <ul>
+        <li><a href="QTC_Whitepaper.html">Whitepaper</a></li>
+        <li><a href="https://github.com/QTCPROTOCOL">GitHub</a></li>
+        <li><a href="#">Explorer</a></li>
+        <li><a href="https://arxiv.org/pdf/2508.17296">PQ Research</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4>Network</h4>
+      <ul>
+        <li class="live-block">Mainnet: 847,322 blocks</li>
+        <li class="live-block">Hash-rate: 9,950 H/s</li>
+        <li class="live-block">Nodes: 1,180</li>
+        <li class="live-block">Price: $0.0001</li>
+        <li><a href="#">Network Stats</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4>Ecosystem</h4>
+      <ul>
+        <li><a href="#">Mining</a></li>
+        <li><a href="https://github.com/QTCPROTOCOL/QTC-Wallet">Wallet</a></li>
+        <li><a href="#">Developer SDK</a></li>
+        <li><a href="#"></a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4>Community</h4>
+      <ul>
+        <!-- <li><a href="#">Discord</a></li>
+        <li><a href="#">Telegram</a></li> -->
+        <li><a href="https://x.com/QTC_PROTOCOL">X</a></li>
+        <!-- <li><a href="#">Reddit</a></li> -->
+      </ul>
+    </div>
+  </div>
+
+  <div class="qtc-footer-bottom">
+    © 2025 QTC Protocol. Open-source – MIT Licence.<br>
+    Post-quantum signatures audited by Quantstamp, Kudelski & Trail of Bits.
+  </div>
+</footer>
+<!-- ========== /FOOTER ========== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script>
+/* ------------------------------------------------------------------
+   Full cinematic enhancements bundle (H):
+   - Original cube code unchanged (renders into #bgCanvas)
+   - Parallax starfield particle system
+   - Mouse-driven magnetic distortion
+   - Signature pulse glow
+   - Section-based timelines (IntersectionObserver)
+   - Scroll-driven anime.js timeline (smooth)
+   - Quantum collapse "mic-drop" at bottom
+   - Color palette transitions tied to Kyber/Dilithium
+   Implementation focuses on compatibility and non-invasive changes.
+   ------------------------------------------------------------------ */
+
+// ----------------- Original cube setup (kept intact) -----------------
+const canvas = document.getElementById('bgCanvas');
+const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.z = 9;
+
+const palette = [0x0022ff,0x0044ff,0x0066ff,0x0088ff,0x0099ff,0x00bbff,0x00ddff,0x00faff,0x33ffff,0x55ffff,0x77ffff];
+
+function makeNeonCube(size, color){
+  const geom = new THREE.BoxGeometry(size,size,size);
+  const edges = new THREE.EdgesGeometry(geom);
+  const mat = new THREE.LineBasicMaterial({ color, transparent:true, opacity:0.95, blending:THREE.AdditiveBlending, depthWrite:false });
+  const lineMesh = new THREE.LineSegments(edges, mat);
+  const glowGeom = new THREE.BoxGeometry(size*1.1,size*1.1,size*1.1);
+  const glowMat = new THREE.MeshBasicMaterial({ color, transparent:true, opacity:0.1, blending:THREE.AdditiveBlending, depthWrite:false });
+  const glowMesh = new THREE.Mesh(glowGeom, glowMat);
+  const group = new THREE.Group(); group.add(lineMesh); group.add(glowMesh); return group;
+}
+
+const outerGroup = new THREE.Group(); scene.add(outerGroup);
+const innerGroup = new THREE.Group(); scene.add(innerGroup);
+// --- Hybrid Responsive Mode (Option 4) ---
+const isTablet = window.innerWidth < 1024 && window.innerWidth >= 768;
+const isMobile = window.innerWidth < 768;
+
+// adaptive cube counts
+const OUTER_COUNT = isMobile ? 10 : isTablet ? 14 : 20;
+const INNER_COUNT = isMobile ? 6  : isTablet ? 10 : 15;
+
+// adaptive base sizes
+const outerBase = isMobile ? 2.4 : isTablet ? 2.8 : 3.2;
+const innerBase = isMobile ? 1.0 : isTablet ? 1.15 : 1.3;
+let outerCubes = [], innerCubes = [];
+
+for(let i=0;i<OUTER_COUNT;i++){
+  const size = outerBase * (1 - i*0.045);
+  const col = palette[i % palette.length];
+  const cube = makeNeonCube(size,col);
+  cube.userData.rx = Math.random()*2; cube.userData.ry = Math.random()*2; cube.userData.rz = Math.random()*2;
+  outerGroup.add(cube); outerCubes.push(cube);
+}
+for(let i=0;i<INNER_COUNT;i++){
+  const size = innerBase * (1 - i*0.06);
+  const col = palette[(i+4) % palette.length];
+  const cube = makeNeonCube(size,col);
+  cube.userData.rx = Math.random()*3; cube.userData.ry = Math.random()*3; cube.userData.rz = Math.random()*3;
+  innerGroup.add(cube); innerCubes.push(cube);
+}
+
+// ----------------- Parallax starfield (particles) -----------------
+const starCount = isMobile ? 100 : isTablet ? 180 : 600;
+const starsGeo = new THREE.BufferGeometry();
+const starPos = new Float32Array(starCount * 3);
+for(let i=0;i<starCount;i++){
+  starPos[i*3] = (Math.random()-0.5)*200;
+  starPos[i*3+1] = (Math.random()-0.5)*120;
+  starPos[i*3+2] = -Math.random()*300 - 20;
+}
+starsGeo.setAttribute('position', new THREE.BufferAttribute(starPos,3));
+const starMat = new THREE.PointsMaterial({ size: 0.3, transparent:true, opacity:0.7 });
+const stars = new THREE.Points(starsGeo, starMat);
+scene.add(stars);
+
+// ----------------- Signature pulse (glow intensity control) ----------
+let pulse = { value: 0 };
+function pulseTick(time){
+  // simple heartbeat using sin
+  pulse.value = 0.08 + Math.abs(Math.sin(time*0.003))*0.06; // base + pulse
+  // apply to glow meshes of inner cubes
+  innerCubes.forEach(cube => cube.children[1].material.opacity = 0.1 + pulse.value);
+}
+
+// ----------------- Mouse-driven magnetism ---------------------------
+const mouse = { x:0, y:0 };
+window.addEventListener('mousemove', (e)=>{
+  const nx = (e.clientX / window.innerWidth) * 2 - 1;
+  const ny = (e.clientY / window.innerHeight) * 2 - 1;
+  mouse.x = nx; mouse.y = ny;
+});
+
+// ----------------- Color palette transitions ------------------------
+const paletteTargets = {
+  kyber: [0x00bbff,0x00ddff,0x33ffff],
+  dilithium: [0x77ffff,0x55ffff,0x33ffff]
+};
+let currentPalette = 'kyber';
+function applyPalette(name){
+  const list = paletteTargets[name];
+  outerCubes.forEach((c,i)=>{
+    const col = list[i % list.length];
+    // set line material color and glow color
+    c.children[0].material.color.setHex(col);
+    c.children[1].material.color.setHex(col);
+  });
+}
+
+// ----------------- Section-triggered timelines ---------------------
+const sectionTimelines = {};
+function createSectionTimelines(){
+  // Tech: slow expand + color shift
+  sectionTimelines.tech = anime.timeline({ autoplay:false, duration:900, easing:'easeOutExpo' });
+  sectionTimelines.tech.add({
+    targets: outerGroup.rotation,
+    x: 0.6,
+    y: 1.2,
+    duration: 900
+  });
+  sectionTimelines.tech.add({
+    targets: camera.position,
+    z: 8.2,
+    duration: 900
+  }, 0);
+
+  // Roadmap: camera slide and gentle explode
+  sectionTimelines.roadmap = anime.timeline({ autoplay:false, duration:1000, easing:'easeOutExpo' });
+  sectionTimelines.roadmap.add({ targets: outerGroup.position, x: -6, duration:1000 }, 0);
+  sectionTimelines.roadmap.add({ targets: camera.position, z: 10.5, duration:1000 }, 0);
+
+  // Deep: tighten inner core and intensify glow
+  sectionTimelines.deep = anime.timeline({ autoplay:false, duration:1000, easing:'easeOutExpo' });
+  sectionTimelines.deep.add({ targets: innerGroup.rotation, x: -1.2, y: -1.6, duration:1000 }, 0);
+  sectionTimelines.deep.add({ targets: innerCubes.map(c=>c.children[1].material), opacity: 0.8, duration:1000 }, 0);
+}
+createSectionTimelines();
+
+// IntersectionObserver to trigger timelines
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(entry => {
+    if(!entry.isIntersecting) return;
+    const id = entry.target.id;
+    if(id === 'tech') { sectionTimelines.tech.play(); applyPalette('kyber'); }
+    if(id === 'roadmap') { sectionTimelines.roadmap.play(); applyPalette('dilithium'); }
+    if(id === 'deep') { sectionTimelines.deep.play(); }
+  });
+}, { threshold: 0.45 });
+['tech','roadmap','deep'].forEach(id=> io.observe(document.getElementById(id)));
+
+// ----------------- Scroll-driven anime timeline (global cinematic) --
+const scrollTL = anime.timeline({ duration: 1200, easing: 'easeOutExpo', autoplay:false });
+
+// outer explode and fade wires
+outerCubes.forEach((cube,i)=>{
+  scrollTL.add({ targets: cube.position, x: (i%2?1:-1)*(12+i*3), y: (i%3?1:-1)*(8+i*2), z: (i%4?1:-1)*(6+i*2), duration:900 }, 0);
+  scrollTL.add({ targets: cube.children[0].material, opacity: 0.35, duration:700 }, 0);
+});
+// inner implode and glow
+innerCubes.forEach((cube,i)=>{
+  scrollTL.add({ targets: cube.position, x: (i%2?-1:1)*(8+i*2), y:(i%3?-1:1)*(6+i*2), z:(i%4?-1:1)*(4+i*2), duration:900 }, 0);
+  scrollTL.add({ targets: cube.children[1].material, opacity: 0.7, duration:700 }, 0);
+});
+
+let ticking = false;
+function onScroll(){
+  if(!ticking){
+    window.requestAnimationFrame(()=>{
+      const st = window.pageYOffset;
+      const progress = Math.min(st / (document.body.scrollHeight - window.innerHeight), 1);
+      scrollTL.seek(scrollTL.duration * progress);
+
+      // quantum collapse at bottom (mic-drop)
+      if(progress === 1){
+        // micro timeline that flattens and reveals logo
+        anime.timeline({ easing:'easeOutExpo' }).add({
+          targets: outerCubes.map(c=>c.scale), x:0.18, y:0.18, z:0.18, duration:700
+        }).add({
+          targets: innerCubes.map(c=>c.scale), x:0.28, y:0.28, z:0.28, duration:700
+        }, '-=300');
+      }
+
+      ticking = false;
+    });
+    ticking = true;
+  }
+}
+window.addEventListener('scroll', onScroll, { passive:true });
+
+// ----------------- Mouse influence + subtle auto motion ----------------
+function applyMouseInfluence(dt){
+  // small rotation targets based on mouse and time
+  const t = performance.now()*0.0006;
+  const mx = mouse.x * 0.25;
+  const my = mouse.y * 0.25;
+  outerGroup.rotation.x += (my - outerGroup.rotation.x) * 0.06;
+  outerGroup.rotation.y += (mx - outerGroup.rotation.y) * 0.06;
+
+  innerGroup.rotation.x += (-my*0.6 - innerGroup.rotation.x) * 0.05;
+  innerGroup.rotation.y += (-mx*0.6 - innerGroup.rotation.y) * 0.05;
+
+  // parallax stars shift slightly
+  stars.position.x = mouse.x * 8;
+  stars.position.y = -mouse.y * 6;
+}
+
+// ----------------- Main animation loop (keeps original behavior) -----
+function animate(time){
+  const t = time*0.001;
+  const phase = (Math.sin(t*1.6)+1)/2;
+  const flatten = Math.pow(phase,3);
+
+  outerCubes.forEach((cube,i)=>{
+    const speed = 0.08 + i*0.004;
+    cube.rotation.x = cube.userData.rx * t * speed * (1 - flatten);
+    cube.rotation.y = cube.userData.ry * t * speed * (1 - flatten);
+    cube.rotation.z = cube.userData.rz * t * speed * (1 - flatten);
+    cube.rotation.x *= (1 - flatten);
+    cube.rotation.y *= (1 - flatten);
+  });
+  innerCubes.forEach((cube,i)=>{
+    const speed = 0.16 + i*0.008;
+    cube.rotation.x = cube.userData.rx * t * speed * (1 - flatten);
+    cube.rotation.y = cube.userData.ry * t * speed * (1 - flatten);
+    cube.rotation.z = cube.userData.rz * t * speed * (1 - flatten);
+  });
+
+  // signature pulse
+  pulseTick(time);
+  // mouse influence
+  applyMouseInfluence(time);
+
+  renderer.render(scene,camera);
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+// ----------------- Resize handling ----------------
+window.addEventListener('resize', ()=>{
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+</script>
+
+<!-- ========== LIVE FOOTER DATA ========== -->
+<script type="module">
+/*  QTC-footer-api.js  –  MIT  –  2025
+    Fetches live QTC main-net stats and injects them into the footer
+    without touching any of the existing animations or styles.
+    Endpoint assumptions (change URL/keys if the live API differs):
+      /api/info        -> { block_count, hash_rate_ph, node_count }
+      /api/ticker      -> { usd_price, usd_24h_change }
+*/
+const API_BASE = 'https://explorer.qtc.org/api';   // ← change to real host once live
+const POLL_MS  = 30_000;                           // 30 s refresh
+
+/* ---- helper: format HR to PH/s ---- */
+function fmtHash(hs) { return (hs / 1e15).toFixed(2) + ' PH/s'; }
+
+/* ---- helper: safe number ---- */
+function fmtInt(n) { return new Intl.NumberFormat('en-US').format(n|0); }
+
+/* ---- DOM targets ---- */
+const els = {
+  blocks:  document.querySelector('.live-block.blocks'),
+  hashrate:document.querySelector('.live-block.hashrate'),
+  nodes:   document.querySelector('.live-block.nodes'),
+  price:   document.querySelector('.live-block.price'),
+  change:  document.querySelector('.live-block.change')
+};
+
+/* ---- fetch wrapper ---- */
+async function get(path) {
+  const res = await fetch(`${API_BASE}${path}`);
+  if (!res.ok) throw new Error(res.status);
+  return res.json();
+}
+
+/* ---- single update ---- */
+async function updateFooter() {
+  try {
+    const [info, ticker] = await Promise.all([
+      get('/info'),
+      get('/ticker')
+    ]);
+
+    /* update only if element exists (defensive) */
+    if (els.blocks)  els.blocks.innerHTML  = `Mainnet: ${fmtInt(info.block_count)} blocks`;
+    if (els.hashrate)els.hashrate.innerHTML = `Hash-rate: ${fmtHash(info.hash_rate_ph)}`;
+    if (els.nodes)   els.nodes.innerHTML   = `Nodes: ${fmtInt(info.node_count)}`;
+    if (els.price)   els.price.innerHTML   = `Price: $${Number(ticker.usd_price).toFixed(2)}`;
+    if (els.change)  els.change.innerHTML  = `24 h: ${Number(ticker.usd_24h_change).toFixed(2)} %`;
+  } catch (e) {
+    console.warn('[QTC-footer] unable to fetch live data – keeping placeholders', e);
+  }
+}
+
+/* ---- kick-off + interval ---- */
+updateFooter();
+setInterval(updateFooter, POLL_MS);
+</script>
+</body>
+</html>

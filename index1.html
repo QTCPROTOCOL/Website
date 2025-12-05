@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>QTC Protocol – Quantum-Safe Bitcoin Evolution</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif}
+  html,body{width:100%;background:#00000000;color:#fff;overflow-x:hidden}
+
+  #bgCanvas{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
+
+  section{position:relative;z-index:2;min-height:120vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6rem 2rem}
+  h1{font-size:4.8rem;font-weight:900;letter-spacing:.05em;background:linear-gradient(90deg,#00faff,#55ffff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;line-height:1.1}
+  h2{font-size:3.2rem;font-weight:800;letter-spacing:.05em;background:linear-gradient(90deg,#00faff,#55ffff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:2rem}
+  p{max-width:780px;margin:1.2rem auto 2.5rem;color:#cceeff;line-height:1.7;font-size:1.2rem;text-align:center}
+  .btn{padding:1rem 2.4rem;border:2px solid #00faff;border-radius:50px;background:transparent;color:#00faff;font-weight:700;text-decoration:none;transition:.4s;display:inline-block}
+  .btn:hover{background:#00faff;color:#000;transform:scale(1.05)}
+  .btn.primary{background:#00faff;color:#000}
+  .btn.primary:hover{background:#00ddff}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2.5rem;max-width:1300px;width:100%;margin-top:4rem}
+  .card{background:rgba(0, 0, 0, 0);padding:2.5rem;border-radius:16px;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(0,0,0,0.6);border:1px solid rgba(0,250,255,0.15);transition:.4s}
+  .card:hover{transform:translateY(-10px);box-shadow:0 20px 50px rgba(0,250,255,0.2)}
+  .card h3{font-size:1.6rem;margin-bottom:1rem;color:#00faff}
+
+  nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 3rem;z-index:10;background:rgba(0,0,0,.6);backdrop-filter:blur(8px)}
+  nav h1{font-size:1.6rem;font-weight:800;background:linear-gradient(90deg,#00faff,#55ffff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  nav a{color:#fff;margin-left:2rem;text-decoration:none;font-weight:500;transition:.3s}
+  nav a:hover{color:#00faff}
+
+  footer{background:#000;padding:4rem 2rem;text-align:center;color:#666;font-size:0.9rem}
+  footer a{color:#00faff;text-decoration:none}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+
+<nav>
+  <h3>QTC<img src="QTC.png" alt="QTC Logo" style="height:32px;"></h3>
+  <div>
+    <a href="#home">Home</a>
+    <a href="#tech">Technology</a>
+    <a href="#tokenomics">Tokenomics</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#mining">Mining</a>
+    <a href="#docs">Docs</a>
+    <a href="https://github.com/qtcprotocol" target="_blank">GitHub</a>
+  </div>
+</nav>
+
+<section id="home">
+  <div class="car">
+    <h3>Quantum-Safe<br>Bitcoin Evolution</h3>
+    <p>QTC is a post-quantum hard-fork of Bitcoin that replaces ECDSA with Kyber1024 and Dilithium3, securing the next 100 years of blockchain.</p>
+    <div>
+      <a class="btn primary" href="qtc1.html">Discover the Tech</a>
+      <a class="btn" href="https://qtcprotocol.com/whitepaper.pdf" target="_blank">Whitepaper</a>
+    </div>
+  </div>
+</section>
+
+<section id="tech">
+  <h2>Post-Quantum Cryptography</h2>
+  <p>Kyber1024 delivers next-gen KEM security, while Dilithium3 provides lattice-based signature guarantees designed to withstand quantum adversaries.</p>
+  <div class="grid">
+    <div class="card"><h3>Kyber1024</h3><p>Module-LWE key encapsulation<br>256-bit quantum resistance</p></div>
+    <div class="card"><h3>Dilithium3</h3><p>Lattice-based digital signatures<br>NIST PQC Standard</p></div>
+    <div class="card"><h3>Bitcoin Compatible</h3><p>Same UTXO model<br>21M supply • SHA-256 PoW</p></div>
+  </div>
+</section>
+
+<section id="tokenomics">
+  <h2>Tokenomics</h2>
+  <p>Identical to Bitcoin — no changes, no compromise.</p>
+  <div class="grid">
+    <div class="card"><h3>Total Supply</h3><p>21,000,000 QTC</p></div>
+    <div class="card"><h3>Halving</h3><p>Every 210,000 blocks (~4 years)</p></div>
+    <div class="card"><h3>Launch</h3><p>Fair launch • No pre-mine • No ICO</p></div>
+  </div>
+</section>
+
+<section id="roadmap">
+  <h2>Roadmap</h2>
+  <div class="grid">
+    <div class="card"><h3>Q4 2025</h3><p>Whitepaper • Core Release</p></div>
+    <div class="card"><h3>Q1 2026</h3><p>Testnet • Community Mining</p></div>
+    <div class="card"><h3>Q2 2026</h3><p>Security Audits</p></div>
+    <div class="card"><h3>Q3 2026</h3><p>Mainnet Launch</p></div>
+  </div>
+</section>
+
+<section id="mining">
+  <h2>Mining</h2>
+  <p>All existing Bitcoin SHA-256 ASICs work on day one. Same difficulty, same rewards, quantum-secure future.</p>
+  <a class="btn primary" href="https://github.com/qtcprotocol/mining" target="_blank">Start Mining →</a>
+</section>
+
+<section id="docs">
+  <h2>Documentation & Community</h2>
+  <p>Join the quantum-resistant revolution.</p>
+  <div class="grid">
+    <div class="card"><h3>Developer Docs</h3><p>Node setup • RPC • Address formats</p><a class="btn" href="https://docs.qtcprotocol.com">Read →</a></div>
+    <div class="card"><h3>Block Explorer</h3><p>Live network data</p><a class="btn" href="https://explorer.qtcprotocol.com">Open →</a></div>
+    <div class="card"><h3>Community</h3><p>Discord • Telegram • Twitter</p><a class="btn" href="https://discord.gg/qtc">Join Discord</a></div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 QTC Protocol – The Quantum-Resistant Bitcoin Fork</p>
+  <p><a href="https://qtcprotocol.com">qtcprotocol.com</a> • <a href="https://github.com/qtcprotocol">GitHub</a> • <a href="https://twitter.com/qtcprotocol">Twitter</a></p>
+
+</footer>
+
+<!-- FULL ORIGINAL CINEMATIC ANIMATION FROM qtc_landing_page (3 responsive).html -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script>
+/* ------------------------------------------------------------------
+   EXACT SAME CODE FROM YOUR ORIGINAL "qtc_landing_page (3 responsive).html"
+   — Fully preserved, only minor variable name tweaks for safety
+   ------------------------------------------------------------------ */
+
+const canvas = document.getElementById('bgCanvas');
+const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.z = 9;
+
+const palette = [0x0022ff,0x0044ff,0x0066ff,0x0088ff,0x0099ff,0x00bbff,0x00ddff,0x00faff,0x33ffff,0x55ffff,0x77ffff];
+
+function makeNeonCube(size, color){
+  const geom = new THREE.BoxGeometry(size,size,size);
+  const edges = new THREE.EdgesGeometry(geom);
+  const mat = new THREE.LineBasicMaterial({ color, transparent:true, opacity:0.95, blending:THREE.AdditiveBlending, depthWrite:false });
+  const lineMesh = new THREE.LineSegments(edges, mat);
+  const glowGeom = new THREE.BoxGeometry(size*1.1,size*1.1,size*1.1);
+  const glowMat = new THREE.MeshBasicMaterial({ color, transparent:true, opacity:0.1, blending:THREE.AdditiveBlending, depthWrite:false });
+  const glowMesh = new THREE.Mesh(glowGeom, glowMat);
+  const group = new THREE.Group(); group.add(lineMesh); group.add(glowMesh); return group;
+}
+
+const outerGroup = new THREE.Group(); scene.add(outerGroup);
+const innerGroup = new THREE.Group(); scene.add(innerGroup);
+
+const isTablet = window.innerWidth < 1024 && window.innerWidth >= 768;
+const isMobile = window.innerWidth < 768;
+const OUTER_COUNT = isMobile ? 10 : isTablet ? 14 : 20;
+const INNER_COUNT = isMobile ? 6  : isTablet ? 10 : 15;
+const outerBase = isMobile ? 2.4 : isTablet ? 2.8 : 3.2;
+const innerBase = isMobile ? 1.0 : isTablet ? 1.15 : 1.3;
+
+let outerCubes = [], innerCubes = [];
+
+// Create outer cubes
+for(let i=0;i<OUTER_COUNT;i++){
+  const size = outerBase * (1 - i * 0.045);
+  const col = palette[i % palette.length];
+  const cube = makeNeonCube(size, col);
+  cube.userData = {rx:Math.random()*2, ry:Math.random()*2, rz:Math.random()*2};
+  outerGroup.add(cube);
+  outerCubes.push(cube);
+}
+// Create inner cubes
+for(let i=0;i<INNER_COUNT;i++){
+  const size = innerBase * (1 - i * 0.06);
+  const col = palette[(i+4) % palette.length];
+  const cube = makeNeonCube(size, col);
+  cube.userData = {rx:Math.random()*3, ry:Math.random()*3, rz:Math.random()*3};
+  innerGroup.add(cube);
+  innerCubes.push(cube);
+}
+
+// Parallax starfield
+const starsGeometry = new THREE.BufferGeometry();
+const starsMaterial = new THREE.PointsMaterial({color: 0x55ffff, size: 0.9, transparent: true, opacity: 0.6});
+const starsVertices = [];
+for(let i=0; i<8000; i++){
+  const x = Math.random()*2000 - 1000;
+  const y = Math.random()*2000 - 1000;
+  const z = Math.random()*1000 - 500;
+  starsVertices.push(x,y,z);
+}
+starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+const stars = new THREE.Points(starsGeometry, starsMaterial);
+scene.add(stars);
+
+// Pulse
+const pulse = {value: 0};
+function pulseTick(time){
+  pulse.value = 0.08 + Math.abs(Math.sin(time*0.003))*0.06;
+  innerCubes.forEach(cube => cube.children[1].material.opacity = 0.1 + pulse.value);
+}
+
+// Mouse
+const mouse = { x:0, y:0 };
+window.addEventListener('mousemove', (e)=>{
+  const nx = (e.clientX / window.innerWidth) * 2 - 1;
+  const ny = (e.clientY / window.innerHeight) * 2 - 1;
+  mouse.x = nx; mouse.y = ny;
+});
+
+// Color palettes
+const paletteTargets = {
+  kyber: [0x00bbff,0x00ddff,0x33ffff],
+  dilithium: [0x77ffff,0x55ffff,0x33ffff]
+};
+function applyPalette(name){
+  const list = paletteTargets[name];
+  outerCubes.forEach((c,i)=>{
+    const col = list[i % list.length];
+    c.children[0].material.color.setHex(col);
+    c.children[1].material.color.setHex(col);
+  });
+}
+
+// Section timelines
+const sectionTimelines = {};
+function createSectionTimelines(){
+  sectionTimelines.tech = anime.timeline({ autoplay:false, duration:900, easing:'easeOutExpo' });
+  sectionTimelines.tech.add({targets: outerGroup.rotation, x:0.6, y:1.2, duration:900})
+                       .add({targets: camera.position, z:8.2, duration:900},0);
+
+  sectionTimelines.roadmap = anime.timeline({ autoplay:false, duration:1000 });
+  sectionTimelines.roadmap.add({targets: outerGroup.position, x:-6, duration:1000},0)
+                           .add({targets: camera.position, z:10.5, duration:1000},0);
+
+  sectionTimelines.deep = anime.timeline({ autoplay:false, duration:1000 });
+  sectionTimelines.deep.add({targets: innerGroup.rotation, x:-1.2, y:-1.6, duration:1000},0)
+                       .add({targets: innerCubes.map(c=>c.children[1].material), opacity:0.8, duration:1000},0);
+}
+createSectionTimelines();
+
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(entry => {
+    if(!entry.isIntersecting) return;
+    const id = entry.target.id;
+    if(id === 'tech'){ sectionTimelines.tech.play(); applyPalette('kyber'); }
+    if(id === 'tokenomics'){ applyPalette('dilithium'); }
+    if(id === 'roadmap'){ sectionTimelines.roadmap.play(); }
+  });
+}, { threshold: 0.45 });
+['tech','tokenomics','roadmap'].forEach(id => io.observe(document.getElementById(id)));
+
+// Scroll timeline
+const scrollTL = anime.timeline({ duration: 1200, easing: 'easeOutExpo', autoplay:false });
+outerCubes.forEach((cube,i)=>{
+  scrollTL.add({ targets: cube.position, x: (i%2?1:-1)*(12+i*3), y: (i%3?1:-1)*(8+i*2), z: (i%4?1:-1)*(6+i*2), duration:900 }, 0)
+          .add({ targets: cube.children[0].material, opacity: 0.35, duration:700 }, 0);
+});
+innerCubes.forEach((cube,i)=>{
+  scrollTL.add({ targets: cube.position, x: (i%2?-1:1)*(8+i*2), y:(i%3?-1:1)*(6+i*2), z:(i%4?-1:1)*(4+i*2), duration:900 }, 0)
+          .add({ targets: cube.children[1].material, opacity: 0.7, duration:700 }, 0);
+});
+
+let ticking = false;
+function onScroll(){
+  if(!ticking){
+    window.requestAnimationFrame(()=>{
+      const progress = Math.min(window.pageYOffset / (document.body.scrollHeight - window.innerHeight), 1);
+      scrollTL.seek(scrollTL.duration * progress);
+      ticking = false;
+    });
+    ticking = true;
+  }
+}
+window.addEventListener('scroll', onScroll, { passive:true });
+
+// Mouse influence
+function applyMouseInfluence(){
+  const mx = mouse.x * 0.25;
+  const my = mouse.y * 0.25;
+  outerGroup.rotation.x += (my - outerGroup.rotation.x) * 0.06;
+  outerGroup.rotation.y += (mx - outerGroup.rotation.y) * 0.06;
+  innerGroup.rotation.x += (-my*0.6 - innerGroup.rotation.x) * 0.05;
+  innerGroup.rotation.y += (-mx*0.6 - innerGroup.rotation.y) * 0.05;
+  stars.position.x = mouse.x * 8;
+  stars.position.y = -mouse.y * 6;
+}
+
+// Main loop
+function animate(time){
+  const t = time*0.001;
+  const phase = (Math.sin(t*1.6)+1)/2;
+  const flatten = Math.pow(phase,3);
+
+  outerCubes.forEach((cube,i)=>{
+    const speed = 0.08 + i*0.004;
+    cube.rotation.x = cube.userData.rx * t * speed * (1 - flatten);
+    cube.rotation.y = cube.userData.ry * t * speed * (1 - flatten);
+    cube.rotation.z = cube.userData.rz * t * speed * (1 - flatten);
+    cube.rotation.x *= (1 - flatten);
+    cube.rotation.y *= (1 - flatten);
+  });
+  innerCubes.forEach((cube,i)=>{
+    const speed = 0.16 + i*0.008;
+    cube.rotation.x = cube.userData.rx * t * speed * (1 - flatten);
+    cube.rotation.y = cube.userData.ry * t * speed * (1 - flatten);
+    cube.rotation.z = cube.userData.rz * t * speed * (1 - flatten);
+  });
+
+  pulseTick(time);
+  applyMouseInfluence();
+  renderer.render(scene,camera);
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+// Resize
+window.addEventListener('resize', ()=>{
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+</script>
+</body>
+</html>
